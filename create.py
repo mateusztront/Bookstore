@@ -16,7 +16,7 @@ def create_table(table_name, columns_names_types):
     sql = f"""
         CREATE TABLE {table_name} ({columns_names_types})
         """
-    print(sql)
+
     conn = connect()
     cursor = conn.cursor()
     try:
