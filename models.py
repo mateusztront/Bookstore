@@ -27,12 +27,18 @@ class User:
 
     def save_to_db(self, cursor):
         if self._id == None:
-            sql = f"""INSERT INTO users(username, password)
+            sql = f"""INSERT INTO users(username, hashed_password)
                             VALUES ('{self.username}', '{self.hashed_password}') RETURNING id"""
             cursor.execute(sql)
             self._id = cursor.fetchone()[0]  # or cursor.fetchone()['id']
             return True
-        return False
+        else:
+            sql = f"""UPDATE users SET hashed_password = '{self.hashed_password}' WHERE id = {self._id}"""
+            cursor.execute(sql)
+        return True
+
+
+
 
 # conn = connect()
 # cursor = conn.cursor()
@@ -61,7 +67,7 @@ class User:
 
     @staticmethod
     def load_user_by_username(cursor, username):
-        sql = f"SELECT id, username, hashed_password FROM users WHERE username={username}"
+        sql = f"SELECT id, username, hashed_password FROM users WHERE username='{username}'"
         cursor.execute(sql, (username,))  # (id_, ) - cause we need a tuple
         data = cursor.fetchone()
         if data:
